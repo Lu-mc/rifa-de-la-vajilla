@@ -157,6 +157,10 @@ var original = JSON.stringify(state);
 
 var isAdmin = false, adminMode = false, sel = new Set(), ed = null;
 var publishing = false, note = '', copied = false, copyFail = '', regTxt = '';
+var SUPABASE_URL = 'https://sselbojwjjziozroynuj.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_kkGEVz2jlmoA9Dwb6A6Brg_A6RxNRfb';
+var authToken = null;
+try { authToken = sessionStorage.getItem('rifa-supabase-token'); } catch(e) {}
 adminMode = false;
 
 function fmt(n){ return '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
@@ -288,7 +292,7 @@ function renderBar(){
       '<button type="button" class="btn" data-act="aplicar">Aplicar</button><button type="button" class="ghost" data-act="cerrar">Cerrar</button></div>' + noteHtml + '</div>';
   } else if (adminMode && n > 0) {
     html = '<div class="bar-in"><div class="sum"><strong>' + n + (n === 1 ? ' cambio sin publicar' : ' cambios sin publicar') + '</strong>' +
-      '<span class="sub">Se guardan en este navegador; aún no se sincronizan con otros visitantes.</span></div>' +
+      '<span class="sub">Los cambios se guardarán en Supabase y se compartirán con los visitantes.</span></div>' +
       '<div class="btns"><button type="button" class="ghost" data-act="descartar">Descartar</button>' +
       '<button type="button" class="btn" data-act="publicar"' + (publishing ? ' disabled' : '') + '>' + ('Guardar cambios') + '</button></div>' + noteHtml + '</div>';
   } else if (!adminMode && sel.size) {
@@ -343,24 +347,76 @@ function buildDoc(){
     '<script id="logica">' + $('logica').textContent + '<\/script></body></html>';
 }
 
-async function publish(){
-  if (publishing) return;
-  publishing = true; note = ''; renderBar();
+async function signInAdmin(){
+  var email = window.prompt('Correo de tu usuario de Supabase:');
+  if (!email) return false;
+  var password = window.prompt('Contraseña de ese usuario de Supabase:');
+  if (!password) return false;
   try {
-    var art = window.claude && window.claude.use ? await window.claude.use('artifact') : null;
-    if (!art) throw {code:'not_granted'};
-    try { sessionStorage.setItem('rifa-admin', '1'); } catch(e) {}
-    await art.publish(buildDoc());
+    var response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'apikey':SUPABASE_KEY},
+      body: JSON.stringify({email:email.trim(), password:password})
+    });
+    var data = await response.json();
+    if (!response.ok || !data.access_token) {
+      window.alert('No se pudo iniciar sesión. Revisa el correo y la contraseña de Supabase.');
+      return false;
+    }
+    authToken = data.access_token;
+    try { sessionStorage.setItem('rifa-supabase-token', authToken); } catch(e) {}
+    return true;
   } catch(err) {
-    publishing = false;
-    var c = err && err.code;
-    note = c === 'conflict' ? 'La página cambió mientras editabas. Se recargará con la versión más reciente.'
-      : (c === 'not_writer' || c === 'not_granted' || c === 'capability_disabled' || c === 'not_declared') ? 'Esta cuenta no puede guardar cambios en la rifa.'
-      : c === 'rate_limited' ? 'Publicaste muy seguido. Espera un momento y vuelve a intentar.'
-      : 'No se pudo publicar. Intenta de nuevo.';
-    renderBar();
+    window.alert('No se pudo conectar con Supabase. Revisa tu conexión e inténtalo otra vez.');
+    return false;
   }
 }
+
+async function saveRemote(){
+  if (publishing) return;
+  if (!authToken) { note = 'Inicia sesión como administradora antes de guardar.'; renderBar(); return; }
+  publishing = true; note = ''; renderBar();
+  try {
+    var response = await fetch(SUPABASE_URL + '/rest/v1/rifa_config?id=eq.1', {
+      method: 'PATCH',
+      headers: {'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + authToken, 'Content-Type':'application/json', 'Prefer':'return=representation'},
+      body: JSON.stringify({datos: state, actualizado_en: new Date().toISOString()})
+    });
+    var resultText = await response.text();
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        authToken = null;
+        try { sessionStorage.removeItem('rifa-supabase-token'); } catch(e) {}
+        throw new Error('La sesión venció o tu usuario no tiene permiso. Vuelve a entrar como administradora.');
+      }
+      throw new Error('Supabase respondió ' + response.status + '. ' + resultText.slice(0, 220));
+    }
+    var result = resultText ? JSON.parse(resultText) : [];
+    if (!result.length) throw new Error('No se actualizó ninguna fila. Confirma que exista una fila con id = 1.');
+    original = JSON.stringify(state);
+    saveLocal();
+    note = '¡Guardado en Supabase! Los visitantes verán los cambios al actualizarse la página.';
+  } catch(err) {
+    note = err && err.message ? err.message : 'No se pudo guardar en Supabase.';
+  } finally { publishing = false; renderAll(); }
+}
+
+async function fetchRemote(){
+  try {
+    var response = await fetch(SUPABASE_URL + '/rest/v1/rifa_config?id=eq.1&select=id,datos,actualizado_en', {
+      headers: {'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + SUPABASE_KEY}
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    var rows = await response.json();
+    if (!rows.length || !rows[0].datos || typeof rows[0].datos !== 'object') throw new Error('La fila id=1 no tiene datos válidos.');
+    state = Object.assign({premio:'Juego de vajillas', precio:10000, whatsapp:'', pago:'', sorteo:'', numeros:{}}, rows[0].datos);
+    if (!state.numeros) state.numeros = {};
+    original = JSON.stringify(state); saveLocal();
+    return true;
+  } catch(err) { return false; }
+}
+
+async function publish(){ return saveRemote(); }
 
 document.addEventListener('click', function(e){
   var b = e.target.closest('[data-act]'); if (!b) return;
@@ -400,16 +456,13 @@ document.addEventListener('click', function(e){
     }, function(){ copyFail = msg; renderBar(); });
   } else if (a === 'admin') {
     if (!adminMode) {
-      var clave = window.prompt('Contraseña de administradora:');
-      if (clave !== '12345') { if (clave !== null) window.alert('Contraseña incorrecta.'); return; }
-      isAdmin = true;
-      adminMode = true;
+      signInAdmin().then(function(ok){ if (!ok) return; isAdmin = true; adminMode = true; ed = null; sel.clear(); note = ''; renderAll(); });
+      return;
     } else {
-      isAdmin = false;
-      adminMode = false;
+      isAdmin = false; adminMode = false; authToken = null;
+      try { sessionStorage.removeItem('rifa-supabase-token'); } catch(e) {}
     }
-    ed = null; sel.clear(); note = '';
-    renderAll();
+    ed = null; sel.clear(); note = ''; renderAll();
   } else if (a === 'edit') {
     startEdit(k);
   } else if (a === 'estado') {
@@ -422,7 +475,7 @@ document.addEventListener('click', function(e){
   } else if (a === 'descartar') {
     state = JSON.parse(original); ed = null; note = ''; renderAll();
   } else if (a === 'publicar') {
-    saveLocal(); original = JSON.stringify(state); note = 'Cambios guardados en este navegador.'; renderAll();
+    saveRemote();
   } else if (a === 'copiar-reg') {
     var lines = Object.keys(state.numeros).sort().map(function(n){
       var r = state.numeros[n];
@@ -448,11 +501,18 @@ document.addEventListener('keydown', function(e){
 });
 
 async function init(){
-  try { var saved = localStorage.getItem('rifa-vajilla-publica'); if (saved) state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
+  var remoteLoaded = await fetchRemote();
+  if (!remoteLoaded) { try { var saved = localStorage.getItem('rifa-vajilla-publica'); if (saved) state = Object.assign(state, JSON.parse(saved)); } catch(e) {} }
   if (!state.whatsapp) state.whatsapp = '573124676435';
   original = JSON.stringify(state);
   $('app').innerHTML = '<div id="v-top"></div><div id="v-board"></div><div id="v-pago"></div><div id="v-owner"></div>';
   renderAll();
+  window.setInterval(async function(){
+    if (adminMode && cambios() > 0) return;
+    var previous = JSON.stringify(state);
+    var ok = await fetchRemote();
+    if (ok && JSON.stringify(state) !== previous) { original = JSON.stringify(state); renderAll(); }
+  }, 20000);
 }
 function saveLocal(){ try { localStorage.setItem('rifa-vajilla-publica', JSON.stringify(state)); } catch(e) {} }
 init();
