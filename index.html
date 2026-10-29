@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff7f2">
+<title>Rifa de la Vajilla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff7f2;--paper:#fff;--ink:#39243b;--muted:#806c80;--line:#f0dce5;--pink:#c23d70;--pink2:#fbe3ed;--gold:#fff0c2;--goldink:#875600;--sold:#e9e4ec;--shadow:0 12px 35px #5d29400d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#ffe8ef 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",sans-serif;padding:24px 16px 150px}
+main{max-width:900px;margin:auto;display:grid;gap:22px}.hero{display:flex;gap:22px;align-items:center;padding:26px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(135deg,#fff,var(--pink2));box-shadow:var(--shadow)}.plate{width:105px;height:105px;flex:none}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:700;color:var(--pink)}h1,h2{font-family:"Playfair Display",Georgia,serif;margin:0;line-height:1.1}h1{font-size:clamp(32px,6vw,48px)}h2{font-size:26px}p{margin:8px 0 0}.subtitle{color:var(--muted);font-size:16px}.tag{display:inline-flex;margin-top:12px;padding:6px 12px;border-radius:99px;background:#fff;color:var(--pink);font-weight:700;font-size:13px;border:1px solid var(--line)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.stat{padding:14px;background:#fff9fc;border:1px solid var(--line);border-radius:15px}.stat span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}.stat strong{display:block;font:600 25px "Playfair Display",Georgia,serif;margin-top:3px}.progress{height:8px;border-radius:99px;background:var(--pink2);overflow:hidden;margin-top:15px}.progress div{height:100%;width:0;background:linear-gradient(90deg,#d65a8a,#9c315f);transition:width .25s}.hint{color:var(--muted);font-size:13px}
+.tools{display:flex;flex-wrap:wrap;gap:9px;margin:17px 0 12px}.tools input{flex:1 1 180px;min-width:0}.tools button,.btn,.ghost{font:600 14px "DM Sans",sans-serif;border-radius:12px;min-height:42px;padding:9px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}.tools button{background:#fff;border:1px solid var(--line);color:var(--ink)}.tools button[aria-pressed=true]{background:var(--pink);border-color:var(--pink);color:white}.tools button:hover,.btn:hover,.ghost:hover{transform:translateY(-1px);box-shadow:0 5px 14px #c23d7020}input,textarea{font:inherit;color:var(--ink);background:white;border:1px solid var(--line);border-radius:12px;padding:11px 13px;width:100%;min-width:0}input:focus,textarea:focus,button:focus-visible{outline:3px solid #e9a6c1;outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.tile{position:relative;min-width:0;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:2px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s,background .15s}.tile:hover:not(:disabled){transform:translateY(-3px);border-color:var(--pink);box-shadow:0 7px 15px #c23d7022}.tile b{font-size:clamp(15px,3vw,22px);font-variant-numeric:tabular-nums}.tile small{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}.tile.selected{background:var(--pink);border-color:var(--pink);color:white}.tile.reserved{background:var(--gold);border:1px dashed #bd8b20;color:var(--goldink)}.tile.sold{background:var(--sold);border-color:transparent;color:#766a7a}.tile:disabled{cursor:not-allowed}.tile[hidden]{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:12px}.dot{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}.dot.free{background:#fff;border:1px solid var(--line)}.dot.res{background:var(--gold)}.dot.sold{background:var(--sold)}.dot.sel{background:var(--pink)}
+.bottom{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:13px 16px calc(13px + env(safe-area-inset-bottom))}.bottom-in{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.summary strong{display:block}.summary span{display:block;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;background:var(--pink);color:white;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.ghost{border:1px solid var(--line);background:white;color:var(--ink)}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.admin{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.admin[hidden]{display:none}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.admin-grid label{font-size:13px;font-weight:700;display:block;margin-bottom:5px}.wide{grid-column:1/-1}.notice{margin-top:10px;padding:10px 12px;background:#fff6df;border-radius:10px;color:#77531b;font-size:13px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:7px}}@media(max-width:520px){body{padding:14px 10px 170px}.hero{padding:18px;gap:13px}.plate{width:72px;height:72px}.panel{padding:16px;border-radius:18px}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:20px}.grid{gap:6px}.tile{border-radius:9px}.tile small{font-size:8px}.bottom-in{align-items:flex-start}.actions{width:100%}.actions>*{flex:1}.admin-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+<svg class="plate" viewBox="0 0 120 120" aria-label="Ilustración de un plato decorativo" role="img"><circle cx="60" cy="60" r="54" fill="#fff" stroke="#c23d70" stroke-width="3"/><circle cx="60" cy="60" r="45" fill="none" stroke="#c23d70" stroke-width="2" stroke-dasharray="2 6"/><circle cx="60" cy="60" r="34" fill="#fbe3ed" stroke="#c23d70" stroke-width="1.5"/><g fill="#c23d70"><ellipse cx="60" cy="38" rx="5" ry="10"/><ellipse cx="60" cy="82" rx="5" ry="10"/><ellipse cx="38" cy="60" rx="10" ry="5"/><ellipse cx="82" cy="60" rx="10" ry="5"/><ellipse cx="44" cy="44" rx="5" ry="9" transform="rotate(-45 44 44)"/><ellipse cx="76" cy="76" rx="5" ry="9" transform="rotate(-45 76 76)"/><ellipse cx="76" cy="44" rx="5" ry="9" transform="rotate(45 76 44)"/><ellipse cx="44" cy="76" rx="5" ry="9" transform="rotate(45 44 76)"/></g><circle cx="60" cy="60" r="8" fill="#fff" stroke="#c23d70" stroke-width="2"/></svg>
+<div><div class="eyebrow">Una rifa especial</div><h1>Rifa de la Vajilla</h1><p class="subtitle">Elige tus números favoritos y participa. ¡Mucha suerte! ♡</p><span class="tag" id="priceTag">$10.000 por número</span></div>
+</header>
+<section class="panel">
+<div class="section-head"><div><div class="eyebrow">El premio</div><h2 id="prizeTitle">Una hermosa vajilla</h2><p class="hint">Toca los números disponibles para seleccionarlos.</p></div><button class="ghost" id="adminToggle" type="button">Modo organizadora</button></div>
+<div class="stats"><div class="stat"><span>Disponibles</span><strong id="available">100</strong></div><div class="stat"><span>Reservados</span><strong id="reserved">0</strong></div><div class="stat"><span>Vendidos</span><strong id="sold">0</strong></div></div>
+<div class="progress"><div id="progressFill"></div></div><p class="hint" id="progressText">¡Sé la primera persona en elegir!</p>
+</section>
+<section class="panel">
+<div class="section-head"><div><div class="eyebrow">Tablero de números</div><h2>Escoge tu suerte</h2></div><span class="hint" id="shownCount">100 números</span></div>
+<div class="tools"><input id="search" type="search" inputmode="numeric" maxlength="2" placeholder="Buscar número (00–99)" aria-label="Buscar número"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="free" aria-pressed="false">Libres</button><button data-filter="mine" aria-pressed="false">Elegidos</button></div>
+<div class="grid" id="numberGrid" aria-label="Números de la rifa"></div>
+<div class="legend"><span><i class="dot free"></i>Libre</span><span><i class="dot sel"></i>Tu selección</span><span><i class="dot res"></i>Reservado</span><span><i class="dot sold"></i>Vendido</span></div>
+</section>
+<section class="panel"><div class="eyebrow">Información</div><h2>¿Cómo participar?</h2><p>1. Selecciona uno o varios números libres.<br>2. Revisa el total de tu pedido.<br>3. Envía tu solicitud por WhatsApp para confirmar la disponibilidad y el pago.</p><p class="hint">La selección en esta página no confirma una reserva; espera la confirmación de la organizadora.</p></section>
+<section class="panel admin" id="adminPanel" hidden><div class="eyebrow">Administración local</div><h2>Configurar la rifa</h2><p class="hint">Estos ajustes se guardan en este navegador. Para que todos vean los mismos cambios desde distintos dispositivos hace falta una base de datos compartida.</p><div class="admin-grid"><div><label for="prizeInput">Nombre del premio</label><input id="prizeInput" value="Una hermosa vajilla"></div><div><label for="priceInput">Precio por número (COP)</label><input id="priceInput" type="number" min="0" step="500" value="10000"></div><div class="wide"><label for="whatsappInput">WhatsApp de la organizadora (con indicativo si hace falta)</label><input id="whatsappInput" inputmode="tel" placeholder="Ej. 573001234567"></div><div class="wide"><label for="statusInput">Cambiar estado de un número</label><div style="display:flex;gap:8px"><input id="statusNumber" type="number" min="0" max="99" placeholder="Número 0–99"><select id="statusInput" style="font:inherit;border:1px solid var(--line);border-radius:12px;padding:10px"><option value="free">Libre</option><option value="reserved">Reservado</option><option value="sold">Vendido</option></select><button class="btn" id="setStatus" type="button">Aplicar</button></div></div><div class="wide"><button class="ghost" id="resetData" type="button">Restablecer estados de números</button></div></div><div class="notice">Importante: el modo organizadora no tiene contraseña. No compartas este modo como un sistema de administración seguro.</div></section>
+</main>
+<div class="bottom"><div class="bottom-in"><div class="summary"><strong id="selectedLabel">Ningún número seleccionado</strong><span id="totalLabel">Total: $0</span></div><div class="actions"><button class="ghost" id="clearBtn" type="button">Limpiar</button><a class="btn" id="whatsappBtn" href="#" target="_blank" rel="noopener">Pedir por WhatsApp</a></div></div></div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const defaults={prize:'Una hermosa vajilla',price:10000,whatsapp:'',states:{}};
+let data;try{data={...defaults,...JSON.parse(localStorage.getItem('vajilla-data')||'{}')};}catch(e){data={...defaults};}
+data.states=data.states||{};
+let selected=new Set(),filter='all',admin=false;
+const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+const labelState=s=>s==='reserved'?'Reservado':s==='sold'?'Vendido':'Libre';
+function save(){try{localStorage.setItem('vajilla-data',JSON.stringify(data));}catch(e){}}
+function render(){
+$('prizeTitle').textContent=data.prize||'Rifa de la Vajilla';$('priceTag').textContent=money(Number(data.price)||0)+' por número';
+$('prizeInput').value=data.prize||'';$('priceInput').value=Number(data.price)||0;$('whatsappInput').value=data.whatsapp||'';
+const states=Object.values(data.states);const reserved=states.filter(s=>s==='reserved').length,sold=states.filter(s=>s==='sold').length;
+$('available').textContent=100-reserved-sold;$('reserved').textContent=reserved;$('sold').textContent=sold;
+$('progressFill').style.width=((reserved+sold)/100*100)+'%';$('progressText').textContent=(reserved+sold)+' de 100 números reservados o vendidos';
+const grid=$('numberGrid');grid.innerHTML='';
+for(let i=0;i<100;i++){const n=String(i).padStart(2,'0'),s=data.states[n]||'free',b=document.createElement('button');b.type='button';b.className='tile'+(s==='reserved'?' reserved':s==='sold'?' sold':selected.has(n)?' selected':'');b.dataset.n=n;b.dataset.state=s;b.innerHTML='<b>'+n+'</b><small>'+(selected.has(n)?'Elegido':labelState(s))+'</small>';b.disabled=s!=='free'&&!admin;b.setAttribute('aria-label','Número '+n+', '+(selected.has(n)?'elegido':labelState(s)));grid.appendChild(b);}
+applyFilters();const nums=[...selected].sort();$('selectedLabel').textContent=nums.length?(nums.length===1?'Número ':'Números ')+nums.join(' · '):'Ningún número seleccionado';$('totalLabel').textContent='Total: '+money(nums.length*(Number(data.price)||0));
+const wa=(data.whatsapp||'').replace(/\D/g,'');const msg='Hola, quiero participar en la rifa de la vajilla con '+(nums.length===1?'el número ':'los números ')+(nums.join(', ')||'(aún no seleccionados)')+'. Total estimado: '+money(nums.length*(Number(data.price)||0))+'. ¿Me confirmas disponibilidad y forma de pago?';
+$('whatsappBtn').href=wa?'https://wa.me/'+wa+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
+$('whatsappBtn').style.opacity=nums.length?'1':'.65';
+}
+function applyFilters(){const q=$('search').value.replace(/\D/g,'').slice(0,2);let count=0;document.querySelectorAll('.tile').forEach(b=>{const s=b.dataset.state,n=b.dataset.n;const showSearch=!q||n.includes(q);const showFilter=filter==='all'||(filter==='free'&&s==='free')||(filter==='mine'&&selected.has(n));b.hidden=!(showSearch&&showFilter);if(!b.hidden)count++;});$('shownCount').textContent=count+' número'+(count===1?'':'s');}
+$('numberGrid').addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b)return;const n=b.dataset.n;if(admin){$('statusNumber').value=Number(n);$('statusInput').value=data.states[n]||'free';return;}if(b.dataset.state!=='free')return;selected.has(n)?selected.delete(n):selected.add(n);render();});
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));applyFilters();}));
+$('search').addEventListener('input',applyFilters);$('clearBtn').addEventListener('click',()=>{selected.clear();render();});
+$('adminToggle').addEventListener('click',()=>{admin=!admin;$('adminPanel').hidden=!admin;$('adminToggle').textContent=admin?'Cerrar modo organizadora':'Modo organizadora';selected.clear();render();});
+$('prizeInput').addEventListener('change',e=>{data.prize=e.target.value.trim()||'Rifa de la Vajilla';save();render();});
+$('priceInput').addEventListener('change',e=>{data.price=Math.max(0,Number(e.target.value)||0);save();render();});
+$('whatsappInput').addEventListener('change',e=>{data.whatsapp=e.target.value;save();render();});
+$('setStatus').addEventListener('click',()=>{const n=String(Math.max(0,Math.min(99,Number($('statusNumber').value)||0))).padStart(2,'0'),s=$('statusInput').value;if(s==='free')delete data.states[n];else data.states[n]=s;selected.delete(n);save();render();});
+$('resetData').addEventListener('click',()=>{if(confirm('¿Restablecer todos los números a libres?')){data.states={};selected.clear();save();render();}});
+render();
+})();
+</script>
+</body>
+</html>
