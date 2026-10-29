@@ -1,80 +1,439 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#fff7f2">
-<title>Rifa de la Vajilla</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#fff7f2;--paper:#fff;--ink:#39243b;--muted:#806c80;--line:#f0dce5;--pink:#c23d70;--pink2:#fbe3ed;--gold:#fff0c2;--goldink:#875600;--sold:#e9e4ec;--shadow:0 12px 35px #5d29400d}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#ffe8ef 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",sans-serif;padding:24px 16px 150px}
-main{max-width:900px;margin:auto;display:grid;gap:22px}.hero{display:flex;gap:22px;align-items:center;padding:26px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(135deg,#fff,var(--pink2));box-shadow:var(--shadow)}.plate{width:105px;height:105px;flex:none}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:700;color:var(--pink)}h1,h2{font-family:"Playfair Display",Georgia,serif;margin:0;line-height:1.1}h1{font-size:clamp(32px,6vw,48px)}h2{font-size:26px}p{margin:8px 0 0}.subtitle{color:var(--muted);font-size:16px}.tag{display:inline-flex;margin-top:12px;padding:6px 12px;border-radius:99px;background:#fff;color:var(--pink);font-weight:700;font-size:13px;border:1px solid var(--line)}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.stat{padding:14px;background:#fff9fc;border:1px solid var(--line);border-radius:15px}.stat span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}.stat strong{display:block;font:600 25px "Playfair Display",Georgia,serif;margin-top:3px}.progress{height:8px;border-radius:99px;background:var(--pink2);overflow:hidden;margin-top:15px}.progress div{height:100%;width:0;background:linear-gradient(90deg,#d65a8a,#9c315f);transition:width .25s}.hint{color:var(--muted);font-size:13px}
-.tools{display:flex;flex-wrap:wrap;gap:9px;margin:17px 0 12px}.tools input{flex:1 1 180px;min-width:0}.tools button,.btn,.ghost{font:600 14px "DM Sans",sans-serif;border-radius:12px;min-height:42px;padding:9px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}.tools button{background:#fff;border:1px solid var(--line);color:var(--ink)}.tools button[aria-pressed=true]{background:var(--pink);border-color:var(--pink);color:white}.tools button:hover,.btn:hover,.ghost:hover{transform:translateY(-1px);box-shadow:0 5px 14px #c23d7020}input,textarea{font:inherit;color:var(--ink);background:white;border:1px solid var(--line);border-radius:12px;padding:11px 13px;width:100%;min-width:0}input:focus,textarea:focus,button:focus-visible{outline:3px solid #e9a6c1;outline-offset:2px}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.tile{position:relative;min-width:0;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:2px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s,background .15s}.tile:hover:not(:disabled){transform:translateY(-3px);border-color:var(--pink);box-shadow:0 7px 15px #c23d7022}.tile b{font-size:clamp(15px,3vw,22px);font-variant-numeric:tabular-nums}.tile small{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}.tile.selected{background:var(--pink);border-color:var(--pink);color:white}.tile.reserved{background:var(--gold);border:1px dashed #bd8b20;color:var(--goldink)}.tile.sold{background:var(--sold);border-color:transparent;color:#766a7a}.tile:disabled{cursor:not-allowed}.tile[hidden]{display:none}
-.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:12px}.dot{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}.dot.free{background:#fff;border:1px solid var(--line)}.dot.res{background:var(--gold)}.dot.sold{background:var(--sold)}.dot.sel{background:var(--pink)}
-.bottom{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:13px 16px calc(13px + env(safe-area-inset-bottom))}.bottom-in{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.summary strong{display:block}.summary span{display:block;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;background:var(--pink);color:white;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.ghost{border:1px solid var(--line);background:white;color:var(--ink)}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.admin{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.admin[hidden]{display:none}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.admin-grid label{font-size:13px;font-weight:700;display:block;margin-bottom:5px}.wide{grid-column:1/-1}.notice{margin-top:10px;padding:10px 12px;background:#fff6df;border-radius:10px;color:#77531b;font-size:13px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:7px}}@media(max-width:520px){body{padding:14px 10px 170px}.hero{padding:18px;gap:13px}.plate{width:72px;height:72px}.panel{padding:16px;border-radius:18px}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:20px}.grid{gap:6px}.tile{border-radius:9px}.tile small{font-size:8px}.bottom-in{align-items:flex-start}.actions{width:100%}.actions>*{flex:1}.admin-grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<main>
-<header class="hero">
-<svg class="plate" viewBox="0 0 120 120" aria-label="Ilustración de un plato decorativo" role="img"><circle cx="60" cy="60" r="54" fill="#fff" stroke="#c23d70" stroke-width="3"/><circle cx="60" cy="60" r="45" fill="none" stroke="#c23d70" stroke-width="2" stroke-dasharray="2 6"/><circle cx="60" cy="60" r="34" fill="#fbe3ed" stroke="#c23d70" stroke-width="1.5"/><g fill="#c23d70"><ellipse cx="60" cy="38" rx="5" ry="10"/><ellipse cx="60" cy="82" rx="5" ry="10"/><ellipse cx="38" cy="60" rx="10" ry="5"/><ellipse cx="82" cy="60" rx="10" ry="5"/><ellipse cx="44" cy="44" rx="5" ry="9" transform="rotate(-45 44 44)"/><ellipse cx="76" cy="76" rx="5" ry="9" transform="rotate(-45 76 76)"/><ellipse cx="76" cy="44" rx="5" ry="9" transform="rotate(45 76 44)"/><ellipse cx="44" cy="76" rx="5" ry="9" transform="rotate(45 44 76)"/></g><circle cx="60" cy="60" r="8" fill="#fff" stroke="#c23d70" stroke-width="2"/></svg>
-<div><div class="eyebrow">Una rifa especial</div><h1>Rifa de la Vajilla</h1><p class="subtitle">Elige tus números favoritos y participa. ¡Mucha suerte! ♡</p><span class="tag" id="priceTag">$10.000 por número</span></div>
-</header>
-<section class="panel">
-<div class="section-head"><div><div class="eyebrow">El premio</div><h2 id="prizeTitle">Una hermosa vajilla</h2><p class="hint">Toca los números disponibles para seleccionarlos.</p></div><button class="ghost" id="adminToggle" type="button">Modo organizadora</button></div>
-<div class="stats"><div class="stat"><span>Disponibles</span><strong id="available">100</strong></div><div class="stat"><span>Reservados</span><strong id="reserved">0</strong></div><div class="stat"><span>Vendidos</span><strong id="sold">0</strong></div></div>
-<div class="progress"><div id="progressFill"></div></div><p class="hint" id="progressText">¡Sé la primera persona en elegir!</p>
-</section>
-<section class="panel">
-<div class="section-head"><div><div class="eyebrow">Tablero de números</div><h2>Escoge tu suerte</h2></div><span class="hint" id="shownCount">100 números</span></div>
-<div class="tools"><input id="search" type="search" inputmode="numeric" maxlength="2" placeholder="Buscar número (00–99)" aria-label="Buscar número"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="free" aria-pressed="false">Libres</button><button data-filter="mine" aria-pressed="false">Elegidos</button></div>
-<div class="grid" id="numberGrid" aria-label="Números de la rifa"></div>
-<div class="legend"><span><i class="dot free"></i>Libre</span><span><i class="dot sel"></i>Tu selección</span><span><i class="dot res"></i>Reservado</span><span><i class="dot sold"></i>Vendido</span></div>
-</section>
-<section class="panel"><div class="eyebrow">Información</div><h2>¿Cómo participar?</h2><p>1. Selecciona uno o varios números libres.<br>2. Revisa el total de tu pedido.<br>3. Envía tu solicitud por WhatsApp para confirmar la disponibilidad y el pago.</p><p class="hint">La selección en esta página no confirma una reserva; espera la confirmación de la organizadora.</p></section>
-<section class="panel admin" id="adminPanel" hidden><div class="eyebrow">Administración local</div><h2>Configurar la rifa</h2><p class="hint">Estos ajustes se guardan en este navegador. Para que todos vean los mismos cambios desde distintos dispositivos hace falta una base de datos compartida.</p><div class="admin-grid"><div><label for="prizeInput">Nombre del premio</label><input id="prizeInput" value="Una hermosa vajilla"></div><div><label for="priceInput">Precio por número (COP)</label><input id="priceInput" type="number" min="0" step="500" value="10000"></div><div class="wide"><label for="whatsappInput">WhatsApp de la organizadora (con indicativo si hace falta)</label><input id="whatsappInput" inputmode="tel" placeholder="Ej. 573001234567"></div><div class="wide"><label for="statusInput">Cambiar estado de un número</label><div style="display:flex;gap:8px"><input id="statusNumber" type="number" min="0" max="99" placeholder="Número 0–99"><select id="statusInput" style="font:inherit;border:1px solid var(--line);border-radius:12px;padding:10px"><option value="free">Libre</option><option value="reserved">Reservado</option><option value="sold">Vendido</option></select><button class="btn" id="setStatus" type="button">Aplicar</button></div></div><div class="wide"><button class="ghost" id="resetData" type="button">Restablecer estados de números</button></div></div><div class="notice">Importante: el modo organizadora no tiene contraseña. No compartas este modo como un sistema de administración seguro.</div></section>
-</main>
-<div class="bottom"><div class="bottom-in"><div class="summary"><strong id="selectedLabel">Ningún número seleccionado</strong><span id="totalLabel">Total: $0</span></div><div class="actions"><button class="ghost" id="clearBtn" type="button">Limpiar</button><a class="btn" id="whatsappBtn" href="#" target="_blank" rel="noopener">Pedir por WhatsApp</a></div></div></div>
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-const defaults={prize:'Una hermosa vajilla',price:10000,whatsapp:'',states:{}};
-let data;try{data={...defaults,...JSON.parse(localStorage.getItem('vajilla-data')||'{}')};}catch(e){data={...defaults};}
-data.states=data.states||{};
-let selected=new Set(),filter='all',admin=false;
-const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
-const labelState=s=>s==='reserved'?'Reservado':s==='sold'?'Vendido':'Libre';
-function save(){try{localStorage.setItem('vajilla-data',JSON.stringify(data));}catch(e){}}
-function render(){
-$('prizeTitle').textContent=data.prize||'Rifa de la Vajilla';$('priceTag').textContent=money(Number(data.price)||0)+' por número';
-$('prizeInput').value=data.prize||'';$('priceInput').value=Number(data.price)||0;$('whatsappInput').value=data.whatsapp||'';
-const states=Object.values(data.states);const reserved=states.filter(s=>s==='reserved').length,sold=states.filter(s=>s==='sold').length;
-$('available').textContent=100-reserved-sold;$('reserved').textContent=reserved;$('sold').textContent=sold;
-$('progressFill').style.width=((reserved+sold)/100*100)+'%';$('progressText').textContent=(reserved+sold)+' de 100 números reservados o vendidos';
-const grid=$('numberGrid');grid.innerHTML='';
-for(let i=0;i<100;i++){const n=String(i).padStart(2,'0'),s=data.states[n]||'free',b=document.createElement('button');b.type='button';b.className='tile'+(s==='reserved'?' reserved':s==='sold'?' sold':selected.has(n)?' selected':'');b.dataset.n=n;b.dataset.state=s;b.innerHTML='<b>'+n+'</b><small>'+(selected.has(n)?'Elegido':labelState(s))+'</small>';b.disabled=s!=='free'&&!admin;b.setAttribute('aria-label','Número '+n+', '+(selected.has(n)?'elegido':labelState(s)));grid.appendChild(b);}
-applyFilters();const nums=[...selected].sort();$('selectedLabel').textContent=nums.length?(nums.length===1?'Número ':'Números ')+nums.join(' · '):'Ningún número seleccionado';$('totalLabel').textContent='Total: '+money(nums.length*(Number(data.price)||0));
-const wa=(data.whatsapp||'').replace(/\D/g,'');const msg='Hola, quiero participar en la rifa de la vajilla con '+(nums.length===1?'el número ':'los números ')+(nums.join(', ')||'(aún no seleccionados)')+'. Total estimado: '+money(nums.length*(Number(data.price)||0))+'. ¿Me confirmas disponibilidad y forma de pago?';
-$('whatsappBtn').href=wa?'https://wa.me/'+wa+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
-$('whatsappBtn').style.opacity=nums.length?'1':'.65';
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><title>Rifa de la Vajilla</title><meta name="claude:viewport-fit-sides" content="cover"><link id="fuentes" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&amp;family=Gloock&amp;display=swap"><style id="estilos">
+/* Layout: una columna centrada de 720px. Cabecera con un plato visto desde arriba, tablero 00-99 de azulejos, barra fija abajo para el pedido (o para editar si es la organizadora). */
+:root{
+  --bg:#FFF7F2; --surface:#FFFFFF; --ink:#39243B; --muted:#806C80; --line:#F0DCE5;
+  --accent:#C23D70; --accent-ink:#FFFFFF; --accent-soft:#FBE3ED;
+  --hold-bg:#FFF0C2; --hold-ink:#875600; --sold-bg:#E9E4EC; --sold-ink:#74677A;
+  --danger:#B3261E;
+  --font-display:'Gloock', Georgia, 'Times New Roman', serif;
+  --font-body:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
-function applyFilters(){const q=$('search').value.replace(/\D/g,'').slice(0,2);let count=0;document.querySelectorAll('.tile').forEach(b=>{const s=b.dataset.state,n=b.dataset.n;const showSearch=!q||n.includes(q);const showFilter=filter==='all'||(filter==='free'&&s==='free')||(filter==='mine'&&selected.has(n));b.hidden=!(showSearch&&showFilter);if(!b.hidden)count++;});$('shownCount').textContent=count+' número'+(count===1?'':'s');}
-$('numberGrid').addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b)return;const n=b.dataset.n;if(admin){$('statusNumber').value=Number(n);$('statusInput').value=data.states[n]||'free';return;}if(b.dataset.state!=='free')return;selected.has(n)?selected.delete(n):selected.add(n);render();});
-document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));applyFilters();}));
-$('search').addEventListener('input',applyFilters);$('clearBtn').addEventListener('click',()=>{selected.clear();render();});
-$('adminToggle').addEventListener('click',()=>{admin=!admin;$('adminPanel').hidden=!admin;$('adminToggle').textContent=admin?'Cerrar modo organizadora':'Modo organizadora';selected.clear();render();});
-$('prizeInput').addEventListener('change',e=>{data.prize=e.target.value.trim()||'Rifa de la Vajilla';save();render();});
-$('priceInput').addEventListener('change',e=>{data.price=Math.max(0,Number(e.target.value)||0);save();render();});
-$('whatsappInput').addEventListener('change',e=>{data.whatsapp=e.target.value;save();render();});
-$('setStatus').addEventListener('click',()=>{const n=String(Math.max(0,Math.min(99,Number($('statusNumber').value)||0))).padStart(2,'0'),s=$('statusInput').value;if(s==='free')delete data.states[n];else data.states[n]=s;selected.delete(n);save();render();});
-$('resetData').addEventListener('click',()=>{if(confirm('¿Restablecer todos los números a libres?')){data.states={};selected.clear();save();render();}});
-render();
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#21151F; --surface:#30202D; --ink:#FFF4FA; --muted:#C7ADBF; --line:#54364C;
+    --accent:#F09AB8; --accent-ink:#21151F; --accent-soft:#4A293D;
+    --hold-bg:#3A2B0A; --hold-ink:#FFD78A; --sold-bg:#392B37; --sold-ink:#C4A7BA;
+    --danger:#FF9DAB; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#21151F; --surface:#30202D; --ink:#FFF4FA; --muted:#C7ADBF; --line:#54364C;
+  --accent:#F09AB8; --accent-ink:#21151F; --accent-soft:#4A293D;
+  --hold-bg:#3A2B0A; --hold-ink:#FFD78A; --sold-bg:#392B37; --sold-ink:#C4A7BA;
+  --danger:#FF9DAB; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.5 var(--font-body); -webkit-text-size-adjust:100%;
+  padding-block:20px 210px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+#app{max-width:720px; margin:0 auto; display:grid; gap:28px}
+#app > div:empty{display:none}
+h1,h2,h3{font-family:var(--font-display); font-weight:400; margin:0; text-wrap:balance}
+h1{font-size:clamp(32px, 8vw, 46px); line-height:1.05}
+h2{font-size:25px; line-height:1.15; margin-bottom:6px}
+h3{font-size:19px; margin:22px 0 8px}
+p{margin:0}
+.kicker{font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px}
+.premio{font-size:18px; color:var(--muted); margin-top:8px}
+.hint,.help{color:var(--muted); font-size:15px}
+.help{margin-bottom:12px}
+
+.hero{display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+.hero-t{flex:1 1 220px; min-width:0}
+.plate{width:92px; height:92px; flex:none; max-width:100%}
+.p-rim{fill:var(--surface); stroke:var(--accent); stroke-width:3}
+.p-dash{fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:1 6; stroke-linecap:round}
+.p-well{fill:var(--accent-soft); stroke:var(--accent); stroke-width:1.5}
+.p-petal{fill:var(--accent); opacity:.88}
+.p-core{fill:var(--surface); stroke:var(--accent); stroke-width:2}
+
+.chip{
+  margin-left:auto; appearance:none; cursor:pointer; min-height:40px;
+  padding:8px 16px; border-radius:999px; border:1.5px solid var(--accent);
+  background:transparent; color:var(--accent); font:600 14px var(--font-body);
+}
+.chip[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+
+.facts{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin:0; padding:12px 0; border-block:1px solid var(--line)}
+.facts div{min-width:0}
+.facts dt{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.facts dd{margin:2px 0 0; font:400 22px/1.2 var(--font-display); font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+.meter{height:10px; border-radius:999px; background:var(--accent-soft); overflow:hidden; margin-top:14px}
+.meter span{display:block; height:100%; background:var(--accent); border-radius:999px; transition:width .3s}
+.meter-l{font-size:14px; color:var(--muted); margin-top:8px}
+.sorteo{margin-top:14px; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:10px; font-size:15px}
+
+.legend{list-style:none; margin:0 0 12px; padding:0; display:flex; flex-wrap:wrap; gap:6px 16px; font-size:13px; color:var(--muted)}
+.sw{display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; margin-right:6px; border:1.5px solid var(--line); background:var(--surface)}
+.sw.s{background:var(--accent); border-color:var(--accent)}
+.sw.r{background:var(--hold-bg); border:1.5px dashed var(--hold-ink)}
+.sw.v{background:var(--sold-bg); border-color:transparent}
+
+.grid{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:8px}
+@media (min-width:700px){.grid{grid-template-columns:repeat(10, minmax(0,1fr)); gap:6px}}
+.tile{
+  appearance:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  width:100%; min-width:0; max-width:100%; aspect-ratio:1 / 1; padding:0; cursor:pointer;
+  border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);
+  font-family:var(--font-body); transition:background .15s, border-color .15s;
+}
+.tile .num{font:600 22px/1 var(--font-body); font-variant-numeric:tabular-nums}
+.tile .cap{font:600 9px/1 var(--font-body); letter-spacing:.04em; text-transform:uppercase}
+.tile:hover:not(:disabled){border-color:var(--accent)}
+.tile:focus-visible,.edit{outline:3px solid var(--accent); outline-offset:2px}
+.tile.sel{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.tile[data-s="r"]{background:var(--hold-bg); color:var(--hold-ink); border:1.5px dashed var(--hold-ink)}
+.tile[data-s="v"]{background:var(--sold-bg); color:var(--sold-ink); border-color:transparent}
+.tile[data-s="v"] .num{text-decoration:line-through; text-decoration-thickness:2px}
+.tile:disabled{cursor:not-allowed}
+
+.pago{padding:16px; background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.pago p:not(.hint){font-size:17px; overflow-wrap:anywhere}
+
+.owner{border-top:2px solid var(--accent); padding-top:20px}
+.reg{list-style:none; margin:0 0 12px; padding:0}
+.row{display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line)}
+.rn{font-weight:700; font-variant-numeric:tabular-nums}
+.rname{overflow-wrap:anywhere}
+.pill{font-size:12px; font-weight:600; padding:2px 10px; border-radius:999px}
+.pill.r{background:var(--hold-bg); color:var(--hold-ink)}
+.pill.v{background:var(--sold-bg); color:var(--ink)}
+.ajustes{margin-top:22px}
+.ajustes summary{cursor:pointer; font-weight:600; min-height:32px}
+.form{display:grid; gap:14px; margin-top:10px}
+.form label{display:block; font-weight:600; font-size:14px; margin-bottom:4px}
+input,textarea{
+  width:100%; min-width:0; font:16px var(--font-body); color:var(--ink); background:var(--surface);
+  border:1.5px solid var(--line); border-radius:10px; padding:10px 12px;
+}
+textarea{min-height:84px; resize:vertical}
+input:focus-visible,textarea:focus-visible,.btn:focus-visible,.ghost:focus-visible,.chip:focus-visible,.seg button:focus-visible,summary:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.regtxt{margin-top:10px; min-height:120px}
+
+.btn,.ghost{
+  appearance:none; display:inline-flex; align-items:center; justify-content:center; min-height:44px;
+  padding:10px 18px; border-radius:10px; font:700 16px var(--font-body); cursor:pointer; text-decoration:none;
+}
+.btn{background:var(--accent); color:var(--accent-ink); border:0}
+.btn:disabled{opacity:.6; cursor:default}
+.ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line); font-weight:600; font-size:15px}
+.sm{min-height:36px; padding:6px 12px; font-size:14px}
+
+.bar{
+  position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--surface); border-top:1px solid var(--line);
+  padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  box-shadow:0 -8px 24px rgba(15,27,61,.10);
+}
+.bar-in{max-width:720px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 14px}
+.sum{min-width:0}
+.sub{display:block; font-size:14px; color:var(--muted)}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+.bar-in.ed{display:grid; gap:10px}
+.ed-h{display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px}
+.seg{display:inline-flex; border:1.5px solid var(--line); border-radius:10px; overflow:hidden}
+.seg button{appearance:none; border:0; background:transparent; color:var(--ink); padding:9px 14px; font:600 14px var(--font-body); cursor:pointer; min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+.ed-f{display:flex; flex-wrap:wrap; gap:8px}
+.ed-f input{flex:1 1 180px}
+.full{flex-basis:100%}
+.note{flex-basis:100%; margin:0; color:var(--danger); font-size:14px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style><div id="app"></div><div id="bar" class="bar" hidden></div><script type="application/json" id="rifa-datos">{"premio":"Juego de vajilla de 4 puestos · 16 piezas","precio":10000,"whatsapp":"","pago":"Nequi: 3105311572\nLlave: 3105311571\nDespués de pagar, envía el comprobante con tus números.","sorteo":"","numeros":{}}</script><script id="logica">
+(function(){
+'use strict';
+var SHELL = '<div id="app"></div><div id="bar" class="bar" hidden></div>';
+var $ = function(id){ return document.getElementById(id); };
+
+var state;
+try { state = JSON.parse($('rifa-datos').textContent); } catch(e) { state = {}; }
+state = Object.assign({premio:'Juego de vajillas', precio:10000, whatsapp:'', pago:'', sorteo:'', numeros:{}}, state);
+if (!state.numeros) state.numeros = {};
+var original = JSON.stringify(state);
+
+var isAdmin = false, adminMode = false, sel = new Set(), ed = null;
+var publishing = false, note = '', copied = false, copyFail = '', regTxt = '';
+try { adminMode = sessionStorage.getItem('rifa-admin') === '1'; } catch(e) {}
+
+function fmt(n){ return '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function pad(i){ return String(i).padStart(2, '0'); }
+function esc(t){
+  return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function counts(){
+  var k = Object.keys(state.numeros);
+  var v = k.filter(function(x){ return state.numeros[x].e === 'v'; }).length;
+  return {v:v, r:k.length - v, t:k.length, libres:100 - k.length};
+}
+function cambios(){
+  var o = JSON.parse(original), n = 0, ks = {};
+  Object.keys(o.numeros).concat(Object.keys(state.numeros)).forEach(function(k){ ks[k] = 1; });
+  Object.keys(ks).forEach(function(k){
+    if (JSON.stringify(o.numeros[k]) !== JSON.stringify(state.numeros[k])) n++;
+  });
+  ['premio','precio','whatsapp','pago','sorteo'].forEach(function(f){ if (o[f] !== state[f]) n++; });
+  return n;
+}
+
+var PLATE = (function(){
+  var petals = '';
+  for (var i = 0; i < 8; i++) {
+    petals += '<ellipse class="p-petal" cx="60" cy="43" rx="5.5" ry="13" transform="rotate(' + (i * 45) + ' 60 60)"/>';
+  }
+  return '<svg class="plate" viewBox="0 0 120 120" aria-hidden="true">' +
+    '<circle class="p-rim" cx="60" cy="60" r="57"/><circle class="p-dash" cx="60" cy="60" r="50"/>' +
+    '<circle class="p-well" cx="60" cy="60" r="38"/>' + petals + '<circle class="p-core" cx="60" cy="60" r="7"/></svg>';
 })();
-</script>
-</body>
-</html>
+
+function renderTop(){
+  var c = counts();
+  var btn = isAdmin ? '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administrar' : 'Administrar') + '</button>' : '';
+  $('v-top').innerHTML =
+    '<header class="hero">' + PLATE +
+    '<div class="hero-t"><p class="kicker">Rifa · 100 números</p><h1>Rifa de la vajilla</h1><p class="premio">' + esc(state.premio) + '</p></div>' + btn + '</header>' +
+    '<dl class="facts"><div><dt>Cada número</dt><dd>' + fmt(state.precio) + '</dd></div>' +
+    '<div><dt>Números</dt><dd>00 al 99</dd></div><div><dt>Libres</dt><dd>' + c.libres + '</dd></div></dl>' +
+    '<div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + c.t + '"><span style="width:' + c.t + '%"></span></div>' +
+    '<p class="meter-l">' + c.t + ' de 100 números tomados</p>' +
+    (state.sorteo ? '<p class="sorteo"><strong>Sorteo:</strong> ' + esc(state.sorteo) + '</p>' : '');
+}
+
+function renderBoard(){
+  var help = adminMode
+    ? 'Toca un número para marcarlo como reservado o vendido.'
+    : 'Toca los números libres que quieras. Tu número queda asegurado cuando se confirma el pago.';
+  var tiles = '';
+  for (var i = 0; i < 100; i++) {
+    var k = pad(i), e = state.numeros[k], s = e ? e.e : 'l';
+    var cls = 'tile';
+    if (!adminMode && sel.has(k)) cls += ' sel';
+    if (adminMode && ed && ed.k === k) cls += ' edit';
+    var lab = s === 'l' ? '' : (s === 'r' ? 'reservado' : 'vendido');
+    var dis = (!adminMode && s !== 'l') ? ' disabled' : '';
+    var pr = (!adminMode && s === 'l') ? ' aria-pressed="' + sel.has(k) + '"' : '';
+    tiles += '<button type="button" class="' + cls + '" data-act="tile" data-n="' + k + '" data-s="' + s + '"' + dis + pr +
+      ' aria-label="Número ' + k + ', ' + (lab || 'libre') + '"><span class="num">' + k + '</span>' +
+      (lab ? '<span class="cap">' + lab + '</span>' : '') + '</button>';
+  }
+  $('v-board').innerHTML =
+    '<section><h2>' + (adminMode ? 'Tablero' : 'Elige tus números') + '</h2><p class="help">' + help + '</p>' +
+    '<ul class="legend"><li><span class="sw"></span>Libre</li><li><span class="sw s"></span>Elegido</li>' +
+    '<li><span class="sw r"></span>Reservado</li><li><span class="sw v"></span>Vendido</li></ul>' +
+    '<div class="grid">' + tiles + '</div></section>';
+}
+
+function renderPago(){
+  var p = (state.pago || '').trim();
+  if (p) {
+    $('v-pago').innerHTML = '<section class="pago"><h2>Cómo pagar</h2><p>' + esc(p).replace(/\n/g, '<br>') + '</p></section>';
+  } else if (adminMode) {
+    $('v-pago').innerHTML = '<section class="pago"><h2>Cómo pagar</h2><p class="hint">Todavía no escribiste cómo pagar. Agrégalo en Ajustes de la rifa y aparecerá aquí.</p></section>';
+  } else {
+    $('v-pago').innerHTML = '';
+  }
+}
+
+function moneyHtml(){
+  var c = counts(), p = state.precio;
+  return '<div><dt>Vendidos</dt><dd>' + c.v + ' · ' + fmt(c.v * p) + '</dd></div>' +
+    '<div><dt>Reservados</dt><dd>' + c.r + ' · ' + fmt(c.r * p) + '</dd></div>' +
+    '<div><dt>Total posible</dt><dd>' + fmt(100 * p) + '</dd></div>';
+}
+
+function renderOwner(){
+  if (!adminMode) { $('v-owner').innerHTML = ''; return; }
+  var keys = Object.keys(state.numeros).sort();
+  var rows = keys.map(function(k){
+    var e = state.numeros[k];
+    return '<li class="row"><span class="rn">' + k + '</span><span class="rname">' + esc(e.n || 'Sin nombre') + '</span>' +
+      '<span class="pill ' + e.e + '">' + (e.e === 'v' ? 'Vendido' : 'Reservado') + '</span>' +
+      '<button type="button" class="ghost sm" data-act="edit" data-n="' + k + '">Editar</button></li>';
+  }).join('');
+  $('v-owner').innerHTML =
+    '<section class="owner"><h2>Administrar</h2>' +
+    '<dl class="facts" id="money">' + moneyHtml() + '</dl>' +
+    '<h3>Registro</h3>' +
+    (rows
+      ? '<ul class="reg">' + rows + '</ul><button type="button" class="ghost" data-act="copiar-reg">Copiar registro</button>' +
+        (regTxt ? '<textarea id="reg-txt" class="regtxt" readonly>' + esc(regTxt) + '</textarea>' : '')
+      : '<p class="hint">Aún no hay números reservados ni vendidos. Cuando alguien te escriba, toca su número en el tablero.</p>') +
+    '<details class="ajustes"><summary>Ajustes de la rifa</summary><div class="form">' +
+    '<div><label for="st-premio">Premio</label><input id="st-premio" data-set="premio" value="' + esc(state.premio) + '"></div>' +
+    '<div><label for="st-precio">Valor de cada número (COP)</label><input id="st-precio" data-set="precio" type="number" inputmode="numeric" min="0" step="500" value="' + esc(state.precio) + '"></div>' +
+    '<div><label for="st-whatsapp">Tu WhatsApp</label><input id="st-whatsapp" data-set="whatsapp" type="tel" inputmode="tel" placeholder="3001234567" value="' + esc(state.whatsapp) + '"><p class="hint">Aquí te llegan los pedidos de números.</p></div>' +
+    '<div><label for="st-pago">Cómo pagar</label><textarea id="st-pago" data-set="pago" placeholder="Nequi 300 123 4567 a nombre de…">' + esc(state.pago) + '</textarea></div>' +
+    '<div><label for="st-sorteo">Cuándo y cómo se sortea</label><input id="st-sorteo" data-set="sorteo" placeholder="Con las dos últimas cifras de la lotería de… del…" value="' + esc(state.sorteo) + '"></div>' +
+    '</div></details></section>';
+  if (regTxt) { var t = $('reg-txt'); if (t) { t.focus(); t.select(); } }
+}
+
+function renderBar(){
+  var bar = $('bar');
+  var inp = $('ed-nombre'); if (inp && ed) ed.n = inp.value;
+  var n = cambios(), html = '';
+  var noteHtml = note ? '<p class="note" role="alert">' + esc(note) + '</p>' : '';
+  if (adminMode && ed) {
+    var names = {l:'Libre', r:'Reservado', v:'Vendido'};
+    html = '<div class="bar-in ed"><div class="ed-h"><strong>Número ' + ed.k + '</strong>' +
+      '<div class="seg" role="group" aria-label="Estado del número">' +
+      ['l','r','v'].map(function(v){ return '<button type="button" data-act="estado" data-v="' + v + '" aria-pressed="' + (ed.e === v) + '">' + names[v] + '</button>'; }).join('') +
+      '</div></div><div class="ed-f"><label class="sr" for="ed-nombre">Nombre</label>' +
+      '<input id="ed-nombre" autocomplete="off" placeholder="Primer nombre de quien lo tiene" value="' + esc(ed.n) + '">' +
+      '<button type="button" class="btn" data-act="aplicar">Aplicar</button><button type="button" class="ghost" data-act="cerrar">Cerrar</button></div>' + noteHtml + '</div>';
+  } else if (adminMode && n > 0) {
+    html = '<div class="bar-in"><div class="sum"><strong>' + n + (n === 1 ? ' cambio sin publicar' : ' cambios sin publicar') + '</strong>' +
+      '<span class="sub">Nadie los ve hasta que publiques.</span></div>' +
+      '<div class="btns"><button type="button" class="ghost" data-act="descartar">Descartar</button>' +
+      '<button type="button" class="btn" data-act="publicar"' + (publishing ? ' disabled' : '') + '>' + (publishing ? 'Publicando…' : 'Publicar cambios') + '</button></div>' + noteHtml + '</div>';
+  } else if (!adminMode && sel.size) {
+    var list = Array.from(sel).sort(), total = list.length * state.precio;
+    var msg = 'Hola, quiero ' + (list.length === 1 ? 'el número ' : 'los números ') + list.join(', ') + ' de la rifa de la vajilla (' + fmt(total) + ').';
+    var d = (state.whatsapp || '').replace(/\D/g, '');
+    var wa = d.length === 10 ? '57' + d : d;
+    var action = wa
+      ? '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">Pedir por WhatsApp</a>'
+      : '<button type="button" class="btn" data-act="copiar-pedido">' + (copied ? 'Copiado' : 'Copiar pedido') + '</button>';
+    html = '<div class="bar-in"><div class="sum"><strong>' + (list.length === 1 ? 'Número ' : 'Números ') + list.join(' · ') + '</strong>' +
+      '<span class="sub">' + list.length + ' × ' + fmt(state.precio) + ' = ' + fmt(total) + '</span></div>' +
+      '<div class="btns"><button type="button" class="ghost" data-act="limpiar">Quitar</button>' + action + '</div>' +
+      (copyFail ? '<input class="full" id="pedido-txt" readonly aria-label="Tu pedido" value="' + esc(copyFail) + '">' : '') + '</div>';
+  }
+  if (!html) { bar.hidden = true; bar.innerHTML = ''; return; }
+  bar.hidden = false; bar.innerHTML = html;
+  if (copyFail) { var pt = $('pedido-txt'); if (pt) { pt.focus(); pt.select(); } }
+}
+
+function renderAll(){ renderTop(); renderBoard(); renderPago(); renderOwner(); renderBar(); }
+
+function startEdit(k){
+  var e = state.numeros[k];
+  ed = {k:k, e:e ? e.e : 'r', n:e ? (e.n || '') : ''};
+  renderBoard(); renderBar();
+}
+
+function aplicar(){
+  var inp = $('ed-nombre'); if (inp && ed) ed.n = inp.value;
+  if (!ed) return;
+  if (ed.e === 'l') delete state.numeros[ed.k];
+  else state.numeros[ed.k] = {e:ed.e, n:(ed.n || '').trim()};
+  ed = null; note = '';
+  renderTop(); renderBoard(); renderOwner(); renderBar();
+}
+
+function copyText(text, ok, fail){
+  try {
+    navigator.clipboard.writeText(text).then(ok, fail);
+  } catch(e) { fail(); }
+}
+
+function buildDoc(){
+  var hs = Array.from(document.head.querySelectorAll('style')).find(function(s){ return /safe-area/.test(s.textContent); });
+  var reset = hs ? hs.textContent : '';
+  var data = JSON.stringify(state).replace(/</g, '\\u003c');
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + reset + '</style></head><body>' +
+    '<title>Rifa de la Vajilla</title><meta name="claude:viewport-fit-sides" content="cover">' + $('fuentes').outerHTML +
+    '<style id="estilos">' + $('estilos').textContent + '</style>' + SHELL +
+    '<script type="application/json" id="rifa-datos">' + data + '<\/script>' +
+    '<script id="logica">' + $('logica').textContent + '<\/script></body></html>';
+}
+
+async function publish(){
+  if (publishing) return;
+  publishing = true; note = ''; renderBar();
+  try {
+    var art = window.claude && window.claude.use ? await window.claude.use('artifact') : null;
+    if (!art) throw {code:'not_granted'};
+    try { sessionStorage.setItem('rifa-admin', '1'); } catch(e) {}
+    await art.publish(buildDoc());
+  } catch(err) {
+    publishing = false;
+    var c = err && err.code;
+    note = c === 'conflict' ? 'La página cambió mientras editabas. Se recargará con la versión más reciente.'
+      : (c === 'not_writer' || c === 'not_granted' || c === 'capability_disabled' || c === 'not_declared') ? 'Esta cuenta no puede guardar cambios en la rifa.'
+      : c === 'rate_limited' ? 'Publicaste muy seguido. Espera un momento y vuelve a intentar.'
+      : 'No se pudo publicar. Intenta de nuevo.';
+    renderBar();
+  }
+}
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest('[data-act]'); if (!b) return;
+  var a = b.dataset.act, k = b.dataset.n;
+  if (a === 'tile') {
+    if (adminMode) { startEdit(k); return; }
+    if (b.disabled) return;
+    if (sel.has(k)) sel.delete(k); else sel.add(k);
+    copyFail = ''; copied = false;
+    renderBoard(); renderBar();
+  } else if (a === 'limpiar') {
+    sel.clear(); copyFail = ''; renderBoard(); renderBar();
+  } else if (a === 'copiar-pedido') {
+    var list = Array.from(sel).sort();
+    var msg = 'Hola, quiero ' + (list.length === 1 ? 'el número ' : 'los números ') + list.join(', ') + ' de la rifa de la vajilla (' + fmt(list.length * state.precio) + ').';
+    copyText(msg, function(){
+      copied = true; copyFail = ''; renderBar();
+      setTimeout(function(){ copied = false; renderBar(); }, 1800);
+    }, function(){ copyFail = msg; renderBar(); });
+  } else if (a === 'admin') {
+    adminMode = !adminMode; ed = null; sel.clear(); note = '';
+    try { sessionStorage.setItem('rifa-admin', adminMode ? '1' : '0'); } catch(err) {}
+    renderAll();
+  } else if (a === 'edit') {
+    startEdit(k);
+  } else if (a === 'estado') {
+    var inp = $('ed-nombre'); if (inp && ed) ed.n = inp.value;
+    if (ed) { ed.e = b.dataset.v; renderBar(); }
+  } else if (a === 'aplicar') {
+    aplicar();
+  } else if (a === 'cerrar') {
+    ed = null; renderBoard(); renderBar();
+  } else if (a === 'descartar') {
+    state = JSON.parse(original); ed = null; note = ''; renderAll();
+  } else if (a === 'publicar') {
+    publish();
+  } else if (a === 'copiar-reg') {
+    var lines = Object.keys(state.numeros).sort().map(function(n){
+      var r = state.numeros[n];
+      return n + ' — ' + (r.n || 'Sin nombre') + ' — ' + (r.e === 'v' ? 'Vendido' : 'Reservado');
+    }).join('\n');
+    copyText(lines, function(){ regTxt = ''; b.textContent = 'Copiado'; }, function(){ regTxt = lines; renderOwner(); });
+  }
+});
+
+document.addEventListener('change', function(e){
+  var f = e.target.closest ? e.target.closest('[data-set]') : null; if (!f) return;
+  var key = f.dataset.set, v = f.value;
+  state[key] = key === 'precio' ? Math.max(0, Math.round(Number(v) || 0)) : v.trim();
+  renderTop(); renderPago(); renderBar();
+  var m = $('money'); if (m) m.innerHTML = moneyHtml();
+});
+
+document.addEventListener('input', function(e){
+  if (e.target && e.target.id === 'ed-nombre' && ed) ed.n = e.target.value;
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && e.target && e.target.id === 'ed-nombre') { e.preventDefault(); aplicar(); }
+});
+
+async function init(){
+  $('app').innerHTML = '<div id="v-top"></div><div id="v-board"></div><div id="v-pago"></div><div id="v-owner"></div>';
+  renderAll();
+  if (window.claude && window.claude.use) {
+    try {
+      var u = await window.claude.use('user');
+      var art = await window.claude.use('artifact');
+      if (u && art) isAdmin = (await u.canEdit()) || (await u.isOwner());
+    } catch(e) {}
+  }
+  if (!isAdmin) adminMode = false;
+  renderAll();
+}
+init();
+})();
+</script></body></html>
