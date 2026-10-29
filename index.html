@@ -157,7 +157,7 @@ var original = JSON.stringify(state);
 
 var isAdmin = false, adminMode = false, sel = new Set(), ed = null;
 var publishing = false, note = '', copied = false, copyFail = '', regTxt = '';
-try { adminMode = sessionStorage.getItem('rifa-admin') === '1'; } catch(e) {}
+adminMode = false;
 
 function fmt(n){ return '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function pad(i){ return String(i).padStart(2, '0'); }
@@ -193,7 +193,7 @@ var PLATE = (function(){
 
 function renderTop(){
   var c = counts();
-  var btn = '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administración' : 'Administradora 🔒') + '</button>';
+  var btn = '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administración' : '🔐 MODO ADMINISTRADORA') + '</button>';
   $('v-top').innerHTML =
     '<header class="hero">' + PLATE +
     '<div class="hero-t"><p class="kicker">Rifa · 100 números</p><h1>Rifa de la vajilla</h1><p class="premio">' + esc(state.premio) + '</p></div>' + btn + '</header>' +
@@ -206,7 +206,7 @@ function renderTop(){
 
 function renderBoard(){
   var help = adminMode
-    ? 'Toca un número para marcarlo como reservado o vendido.'
+    ? 'ADMINISTRACIÓN: toca cualquier número y abajo aparecerá el formulario para elegir Libre, Reservado o Vendido y escribir el nombre.'
     : 'Toca los números libres que quieras. Tu número queda asegurado cuando se confirma el pago.';
   var tiles = '';
   for (var i = 0; i < 100; i++) {
@@ -284,7 +284,7 @@ function renderBar(){
       '<div class="seg" role="group" aria-label="Estado del número">' +
       ['l','r','v'].map(function(v){ return '<button type="button" data-act="estado" data-v="' + v + '" aria-pressed="' + (ed.e === v) + '">' + names[v] + '</button>'; }).join('') +
       '</div></div><div class="ed-f"><label class="sr" for="ed-nombre">Nombre</label>' +
-      '<input id="ed-nombre" autocomplete="off" placeholder="Primer nombre de quien lo tiene" value="' + esc(ed.n) + '">' +
+      '<input id="ed-nombre" autocomplete="off" placeholder="Nombre de la persona que reservó/compró" value="' + esc(ed.n) + '">' +
       '<button type="button" class="btn" data-act="aplicar">Aplicar</button><button type="button" class="ghost" data-act="cerrar">Cerrar</button></div>' + noteHtml + '</div>';
   } else if (adminMode && n > 0) {
     html = '<div class="bar-in"><div class="sum"><strong>' + n + (n === 1 ? ' cambio sin publicar' : ' cambios sin publicar') + '</strong>' +
@@ -298,7 +298,7 @@ function renderBar(){
     var wa = d.length === 10 ? '57' + d : d;
     var action = wa
       ? '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">Enviar por WhatsApp</a>'
-      : '<button type="button" class="btn" data-act="configurar-whatsapp">Configurar WhatsApp</button>';
+      : '<button type="button" class="btn" data-act="configurar-whatsapp">Enviar por WhatsApp</button>';
     html = '<div class="bar-in"><div class="sum"><strong>' + (list.length === 1 ? 'Número ' : 'Números ') + list.join(' · ') + '</strong>' +
       '<span class="sub">' + list.length + ' × ' + fmt(state.precio) + ' = ' + fmt(total) + '</span></div>' +
       '<div class="btns"><button type="button" class="ghost" data-act="limpiar">Quitar</button>' + action + '</div>' +
@@ -374,6 +374,7 @@ document.addEventListener('click', function(e){
   } else if (a === 'limpiar') {
     sel.clear(); copyFail = ''; renderBoard(); renderBar();
   } else if (a === 'configurar-whatsapp') {
+    var tab = window.open('about:blank', '_blank');
     var numero = window.prompt('Escribe el WhatsApp que recibirá los pedidos (Colombia: 10 dígitos):');
     if (numero !== null) {
       numero = numero.replace(/\D/g, '');
@@ -382,10 +383,14 @@ document.addEventListener('click', function(e){
         var pedidos = Array.from(sel).sort(), totalPedido = pedidos.length * state.precio;
         var mensaje = 'Hola, quiero ' + (pedidos.length === 1 ? 'el número ' : 'los números ') + pedidos.join(', ') + ' de la rifa de la vajilla (' + fmt(totalPedido) + ').';
         var destino = numero.length === 10 ? '57' + numero : numero;
-        window.open('https://wa.me/' + destino + '?text=' + encodeURIComponent(mensaje), '_blank');
+        var url = 'https://wa.me/' + destino + '?text=' + encodeURIComponent(mensaje);
+        if (tab) tab.location.href = url; else window.location.href = url;
         renderBar();
-      } else { window.alert('Número no válido. Escribe 10 dígitos o 57 seguido del número.'); }
-    }
+      } else {
+        if (tab) tab.close();
+        window.alert('Número no válido. Escribe 10 dígitos o 57 seguido del número.');
+      }
+    } else if (tab) { tab.close(); }
   } else if (a === 'copiar-pedido') {
     var list = Array.from(sel).sort();
     var msg = 'Hola, quiero ' + (list.length === 1 ? 'el número ' : 'los números ') + list.join(', ') + ' de la rifa de la vajilla (' + fmt(list.length * state.precio) + ').';
@@ -394,13 +399,16 @@ document.addEventListener('click', function(e){
       setTimeout(function(){ copied = false; renderBar(); }, 1800);
     }, function(){ copyFail = msg; renderBar(); });
   } else if (a === 'admin') {
-    if (!isAdmin && !adminMode) {
+    if (!adminMode) {
       var clave = window.prompt('Contraseña de administradora:');
       if (clave !== '12345') { if (clave !== null) window.alert('Contraseña incorrecta.'); return; }
       isAdmin = true;
+      adminMode = true;
+    } else {
+      isAdmin = false;
+      adminMode = false;
     }
-    adminMode = !adminMode; ed = null; sel.clear(); note = '';
-    try { sessionStorage.setItem('rifa-admin', adminMode ? '1' : '0'); } catch(err) {}
+    ed = null; sel.clear(); note = '';
     renderAll();
   } else if (a === 'edit') {
     startEdit(k);
