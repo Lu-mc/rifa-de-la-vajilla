@@ -428,6 +428,7 @@ document.addEventListener('keydown', function(e){
 
 async function init(){
   try { var saved = localStorage.getItem('rifa-vajilla-publica'); if (saved) state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
+  original = JSON.stringify(state);
   $('app').innerHTML = '<div id="v-top"></div><div id="v-board"></div><div id="v-pago"></div><div id="v-owner"></div>';
   renderAll();
 }
