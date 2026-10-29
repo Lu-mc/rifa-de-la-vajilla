@@ -193,7 +193,7 @@ var PLATE = (function(){
 
 function renderTop(){
   var c = counts();
-  var btn = isAdmin ? '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administrar' : 'Administrar') + '</button>' : '';
+  var btn = '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administrar' : 'Administrar') + '</button>';
   $('v-top').innerHTML =
     '<header class="hero">' + PLATE +
     '<div class="hero-t"><p class="kicker">Rifa · 100 números</p><h1>Rifa de la vajilla</h1><p class="premio">' + esc(state.premio) + '</p></div>' + btn + '</header>' +
@@ -297,7 +297,7 @@ function renderBar(){
     var d = (state.whatsapp || '').replace(/\D/g, '');
     var wa = d.length === 10 ? '57' + d : d;
     var action = wa
-      ? '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">Pedir por WhatsApp</a>'
+      ? '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">Enviar por WhatsApp</a>'
       : '<button type="button" class="btn" data-act="copiar-pedido">' + (copied ? 'Copiado' : 'Copiar pedido') + '</button>';
     html = '<div class="bar-in"><div class="sum"><strong>' + (list.length === 1 ? 'Número ' : 'Números ') + list.join(' · ') + '</strong>' +
       '<span class="sub">' + list.length + ' × ' + fmt(state.precio) + ' = ' + fmt(total) + '</span></div>' +
@@ -322,7 +322,7 @@ function aplicar(){
   if (!ed) return;
   if (ed.e === 'l') delete state.numeros[ed.k];
   else state.numeros[ed.k] = {e:ed.e, n:(ed.n || '').trim()};
-  ed = null; note = '';
+  ed = null; note = ''; saveLocal();
   renderTop(); renderBoard(); renderOwner(); renderBar();
 }
 
@@ -381,6 +381,11 @@ document.addEventListener('click', function(e){
       setTimeout(function(){ copied = false; renderBar(); }, 1800);
     }, function(){ copyFail = msg; renderBar(); });
   } else if (a === 'admin') {
+    if (!isAdmin && !adminMode) {
+      var clave = window.prompt('Contraseña de administradora:');
+      if (clave !== '12345') { if (clave !== null) window.alert('Contraseña incorrecta.'); return; }
+      isAdmin = true;
+    }
     adminMode = !adminMode; ed = null; sel.clear(); note = '';
     try { sessionStorage.setItem('rifa-admin', adminMode ? '1' : '0'); } catch(err) {}
     renderAll();
@@ -409,7 +414,7 @@ document.addEventListener('click', function(e){
 document.addEventListener('change', function(e){
   var f = e.target.closest ? e.target.closest('[data-set]') : null; if (!f) return;
   var key = f.dataset.set, v = f.value;
-  state[key] = key === 'precio' ? Math.max(0, Math.round(Number(v) || 0)) : v.trim();
+  state[key] = key === 'precio' ? Math.max(0, Math.round(Number(v) || 0)) : v.trim(); saveLocal();
   renderTop(); renderPago(); renderBar();
   var m = $('money'); if (m) m.innerHTML = moneyHtml();
 });
@@ -422,18 +427,11 @@ document.addEventListener('keydown', function(e){
 });
 
 async function init(){
+  try { var saved = localStorage.getItem('rifa-vajilla-publica'); if (saved) state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
   $('app').innerHTML = '<div id="v-top"></div><div id="v-board"></div><div id="v-pago"></div><div id="v-owner"></div>';
   renderAll();
-  if (window.claude && window.claude.use) {
-    try {
-      var u = await window.claude.use('user');
-      var art = await window.claude.use('artifact');
-      if (u && art) isAdmin = (await u.canEdit()) || (await u.isOwner());
-    } catch(e) {}
-  }
-  if (!isAdmin) adminMode = false;
-  renderAll();
 }
+function saveLocal(){ try { localStorage.setItem('rifa-vajilla-publica', JSON.stringify(state)); } catch(e) {} }
 init();
 })();
 </script></body></html>
