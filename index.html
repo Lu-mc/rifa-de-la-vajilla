@@ -143,7 +143,7 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,.ghost:focus-visib
 .note{flex-basis:100%; margin:0; color:var(--danger); font-size:14px}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 @media (prefers-reduced-motion: reduce){*{transition:none !important}}
-</style><div id="app"></div><div id="bar" class="bar" hidden></div><script type="application/json" id="rifa-datos">{"premio":"Juego de vajilla de 4 puestos · 16 piezas","precio":10000,"whatsapp":"","pago":"Nequi: 3105311572\nLlave: 3105311571\nDespués de pagar, envía el comprobante con tus números.","sorteo":"","numeros":{}}</script><script id="logica">
+</style><div id="app"></div><div id="bar" class="bar" hidden></div><script type="application/json" id="rifa-datos">{"premio":"Juego de vajilla de 4 puestos · 16 piezas","precio":10000,"whatsapp":"573124676435","pago":"Nequi: 3105311572\nLlave: 3105311571\nDespués de pagar, envía el comprobante con tus números.","sorteo":"","numeros":{}}</script><script id="logica">
 (function(){
 'use strict';
 var SHELL = '<div id="app"></div><div id="bar" class="bar" hidden></div>';
@@ -449,6 +449,7 @@ document.addEventListener('keydown', function(e){
 
 async function init(){
   try { var saved = localStorage.getItem('rifa-vajilla-publica'); if (saved) state = Object.assign(state, JSON.parse(saved)); } catch(e) {}
+  if (!state.whatsapp) state.whatsapp = '573124676435';
   original = JSON.stringify(state);
   $('app').innerHTML = '<div id="v-top"></div><div id="v-board"></div><div id="v-pago"></div><div id="v-owner"></div>';
   renderAll();
