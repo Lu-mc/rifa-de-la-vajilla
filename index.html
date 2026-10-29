@@ -193,7 +193,7 @@ var PLATE = (function(){
 
 function renderTop(){
   var c = counts();
-  var btn = '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administrar' : 'Administrar') + '</button>';
+  var btn = '<button type="button" class="chip" data-act="admin" aria-pressed="' + adminMode + '">' + (adminMode ? 'Salir de administración' : 'Administradora 🔒') + '</button>';
   $('v-top').innerHTML =
     '<header class="hero">' + PLATE +
     '<div class="hero-t"><p class="kicker">Rifa · 100 números</p><h1>Rifa de la vajilla</h1><p class="premio">' + esc(state.premio) + '</p></div>' + btn + '</header>' +
@@ -288,9 +288,9 @@ function renderBar(){
       '<button type="button" class="btn" data-act="aplicar">Aplicar</button><button type="button" class="ghost" data-act="cerrar">Cerrar</button></div>' + noteHtml + '</div>';
   } else if (adminMode && n > 0) {
     html = '<div class="bar-in"><div class="sum"><strong>' + n + (n === 1 ? ' cambio sin publicar' : ' cambios sin publicar') + '</strong>' +
-      '<span class="sub">Nadie los ve hasta que publiques.</span></div>' +
+      '<span class="sub">Se guardan en este navegador; aún no se sincronizan con otros visitantes.</span></div>' +
       '<div class="btns"><button type="button" class="ghost" data-act="descartar">Descartar</button>' +
-      '<button type="button" class="btn" data-act="publicar"' + (publishing ? ' disabled' : '') + '>' + (publishing ? 'Publicando…' : 'Publicar cambios') + '</button></div>' + noteHtml + '</div>';
+      '<button type="button" class="btn" data-act="publicar"' + (publishing ? ' disabled' : '') + '>' + ('Guardar cambios') + '</button></div>' + noteHtml + '</div>';
   } else if (!adminMode && sel.size) {
     var list = Array.from(sel).sort(), total = list.length * state.precio;
     var msg = 'Hola, quiero ' + (list.length === 1 ? 'el número ' : 'los números ') + list.join(', ') + ' de la rifa de la vajilla (' + fmt(total) + ').';
@@ -298,7 +298,7 @@ function renderBar(){
     var wa = d.length === 10 ? '57' + d : d;
     var action = wa
       ? '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">Enviar por WhatsApp</a>'
-      : '<button type="button" class="btn" data-act="copiar-pedido">' + (copied ? 'Copiado' : 'Copiar pedido') + '</button>';
+      : '<button type="button" class="btn" data-act="configurar-whatsapp">Configurar WhatsApp</button>';
     html = '<div class="bar-in"><div class="sum"><strong>' + (list.length === 1 ? 'Número ' : 'Números ') + list.join(' · ') + '</strong>' +
       '<span class="sub">' + list.length + ' × ' + fmt(state.precio) + ' = ' + fmt(total) + '</span></div>' +
       '<div class="btns"><button type="button" class="ghost" data-act="limpiar">Quitar</button>' + action + '</div>' +
@@ -373,6 +373,19 @@ document.addEventListener('click', function(e){
     renderBoard(); renderBar();
   } else if (a === 'limpiar') {
     sel.clear(); copyFail = ''; renderBoard(); renderBar();
+  } else if (a === 'configurar-whatsapp') {
+    var numero = window.prompt('Escribe el WhatsApp que recibirá los pedidos (Colombia: 10 dígitos):');
+    if (numero !== null) {
+      numero = numero.replace(/\D/g, '');
+      if (numero.length === 10 || (numero.length === 12 && numero.indexOf('57') === 0)) {
+        state.whatsapp = numero; saveLocal();
+        var pedidos = Array.from(sel).sort(), totalPedido = pedidos.length * state.precio;
+        var mensaje = 'Hola, quiero ' + (pedidos.length === 1 ? 'el número ' : 'los números ') + pedidos.join(', ') + ' de la rifa de la vajilla (' + fmt(totalPedido) + ').';
+        var destino = numero.length === 10 ? '57' + numero : numero;
+        window.open('https://wa.me/' + destino + '?text=' + encodeURIComponent(mensaje), '_blank');
+        renderBar();
+      } else { window.alert('Número no válido. Escribe 10 dígitos o 57 seguido del número.'); }
+    }
   } else if (a === 'copiar-pedido') {
     var list = Array.from(sel).sort();
     var msg = 'Hola, quiero ' + (list.length === 1 ? 'el número ' : 'los números ') + list.join(', ') + ' de la rifa de la vajilla (' + fmt(list.length * state.precio) + ').';
@@ -401,7 +414,7 @@ document.addEventListener('click', function(e){
   } else if (a === 'descartar') {
     state = JSON.parse(original); ed = null; note = ''; renderAll();
   } else if (a === 'publicar') {
-    publish();
+    saveLocal(); original = JSON.stringify(state); note = 'Cambios guardados en este navegador.'; renderAll();
   } else if (a === 'copiar-reg') {
     var lines = Object.keys(state.numeros).sort().map(function(n){
       var r = state.numeros[n];
