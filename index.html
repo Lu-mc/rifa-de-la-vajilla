@@ -233,7 +233,7 @@ function renderBoard(){
 }
 
 function renderPago(){
-  var p = (state.pago || '').trim();
+  var p = (state.pago || '').replace(/Llave:\s*3105311571/g, 'Llave: 3105311572').trim();
   if (p) {
     $('v-pago').innerHTML = '<section class="pago"><h2>Cómo pagar</h2><p>' + esc(p).replace(/\n/g, '<br>') + '</p></section>';
   } else if (adminMode) {
