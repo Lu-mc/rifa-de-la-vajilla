@@ -410,6 +410,7 @@ async function fetchRemote(){
     var rows = await response.json();
     if (!rows.length || !rows[0].datos || typeof rows[0].datos !== 'object') throw new Error('La fila id=1 no tiene datos válidos.');
     state = Object.assign({premio:'Juego de vajillas', precio:10000, whatsapp:'', pago:'', sorteo:'', numeros:{}}, rows[0].datos);
+    if (typeof state.pago === 'string') state.pago = state.pago.replace(/Llave:\s*3105311571/g, 'Llave: 3105311572');
     if (!state.numeros) state.numeros = {};
     original = JSON.stringify(state); saveLocal();
     return true;
